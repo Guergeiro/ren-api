@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/interval"
 )
 
-func DownloadCsv(startTime, endTime time.Time) (io.ReadCloser, error) {
+func DownloadCsv(interval interval.Interval) (io.ReadCloser, error) {
 	page, cookies, err := getInitialPage()
 	if err != nil {
 		return nil, err
@@ -20,7 +20,7 @@ func DownloadCsv(startTime, endTime time.Time) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	csvUri, err := searchForIntervalCsv(formUri, cookies, startTime, endTime)
+	csvUri, err := searchForIntervalCsv(formUri, cookies, interval)
 	if err != nil {
 		return nil, err
 	}
@@ -40,15 +40,14 @@ func getInitialPage() (*goquery.Document, []*http.Cookie, error) {
 func searchForIntervalCsv(
 	formUri string,
 	cookies []*http.Cookie,
-	startTime,
-	endTime time.Time,
+	interval interval.Interval,
 ) (string, error) {
 
 	layout := "02/01/2006"
 	form := url.Values{}
 	form.Add("servicePoint", "")
-	form.Add("startTime", startTime.AddDate(0, 0, -1).Format(layout))
-	form.Add("stopTime", endTime.AddDate(0, 0, 1).Format(layout))
+	form.Add("startTime", interval.StartTime().Format(layout))
+	form.Add("stopTime", interval.StopTime().Format(layout))
 
 	req, err := http.NewRequest(
 		"POST",
