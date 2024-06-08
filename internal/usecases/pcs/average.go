@@ -1,11 +1,12 @@
 package pcs
 
 import (
-	"sync"
 	"time"
 
 	"github.com/guergeiro/fator-conversao-gas-portugal/internal/interval"
 	"github.com/guergeiro/fator-conversao-gas-portugal/internal/reading"
+
+	"golang.org/x/sync/errgroup"
 )
 
 func Average(startTime, stopTime time.Time) (float64, error) {
@@ -14,19 +15,18 @@ func Average(startTime, stopTime time.Time) (float64, error) {
 		stopTime.AddDate(0, 0, 1),
 	)
 	channel := make(chan reading.Reading)
-	wg := sync.WaitGroup{}
+	wg := errgroup.Group{}
 	for _, in := range intervals {
-		wg.Add(1)
-		go func(in interval.Interval, wg *sync.WaitGroup) {
-			defer wg.Done()
+		in := in
+		wg.Go(func() error {
 			csvReader, err := reading.DownloadCsv(in)
 			if err != nil {
-				return
+				return err
 			}
 			defer csvReader.Close()
 			parsedReadings, err := reading.ParseCsv(csvReader)
 			if err != nil {
-				return
+				return err
 			}
 			for _, reading := range reading.PruneExcessValues(
 				parsedReadings,
@@ -35,7 +35,8 @@ func Average(startTime, stopTime time.Time) (float64, error) {
 			) {
 				channel <- reading
 			}
-		}(in, &wg)
+			return nil
+		})
 	}
 	go func() {
 		wg.Wait()
