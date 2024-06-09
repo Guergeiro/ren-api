@@ -5,12 +5,25 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/guergeiro/fator-conversao-gas-portugal/internal/usecases/pcs"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/application/usecase"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/application/usecase/pcs"
 )
 
 const timelayout = "2006-01-02"
 
-func PcsGet(r *http.Request) (string, error) {
+type PcsGetController struct {
+	usecase usecase.UseCase[pcs.AverageProps, float64]
+}
+
+func NewPcsGetController(
+	usecase usecase.UseCase[pcs.AverageProps, float64],
+) PcsGetController {
+	return PcsGetController{
+		usecase,
+	}
+}
+
+func (c PcsGetController) Handle(r *http.Request) (string, error) {
 	startTimeStr := r.URL.Query().Get("startTime")
 	if len(startTimeStr) == 0 {
 		startTimeStr = time.Now().Format(timelayout)
@@ -27,7 +40,8 @@ func PcsGet(r *http.Request) (string, error) {
 			return "", err
 		}
 	}
-	average, err := pcs.Average(startTime, stopTime)
+	input := pcs.NewAverageProps(r.Context(), startTime, stopTime)
+	average, err := c.usecase.Execute(input)
 	if err != nil {
 		return "", err
 	}

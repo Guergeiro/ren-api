@@ -1,4 +1,4 @@
-package reading
+package ren
 
 import (
 	"fmt"
@@ -8,10 +8,10 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/guergeiro/fator-conversao-gas-portugal/internal/interval"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/domain/entity"
 )
 
-func DownloadCsv(interval interval.Interval) (io.ReadCloser, error) {
+func downloadCsv(interval entity.Interval) (io.ReadCloser, error) {
 	page, cookies, err := getInitialPage()
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func getInitialPage() (*goquery.Document, []*http.Cookie, error) {
 func searchForIntervalCsv(
 	formUri string,
 	cookies []*http.Cookie,
-	interval interval.Interval,
+	interval entity.Interval,
 ) (string, error) {
 
 	layout := "02/01/2006"

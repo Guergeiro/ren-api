@@ -1,4 +1,4 @@
-package reading
+package entity
 
 import (
 	"cmp"

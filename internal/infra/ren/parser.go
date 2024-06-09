@@ -1,18 +1,19 @@
-package reading
+package ren
 
 import (
 	"bufio"
 	"io"
-	"slices"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/domain/entity"
 )
 
 const timelayout = "2006-01-02 15:04"
 
-func ParseCsv(reader io.Reader) ([]Reading, error) {
-	lines := []Reading{}
+func parseCsv(reader io.Reader) ([]entity.Reading, error) {
+	lines := []entity.Reading{}
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
 		splittedLines := strings.Split(scanner.Text(), ";")
@@ -31,23 +32,7 @@ func ParseCsv(reader io.Reader) ([]Reading, error) {
 			return nil, err
 		}
 
-		lines = append(lines, NewReading(timestamp, splittedLines[1], number))
+		lines = append(lines, entity.NewReading(timestamp, splittedLines[1], number))
 	}
 	return lines, nil
-}
-
-func PruneExcessValues(
-	readings []Reading,
-	startTime,
-	stopTime time.Time,
-) []Reading {
-	return slices.DeleteFunc(readings, func(reading Reading) bool {
-		if reading.CompareDay(startTime) < 0 {
-			return true
-		}
-		if reading.CompareDay(stopTime) > 0 {
-			return true
-		}
-		return false
-	})
 }

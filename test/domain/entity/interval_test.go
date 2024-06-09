@@ -1,14 +1,12 @@
-package interval
+package entity
 
 import (
 	"fmt"
 	"testing"
 	"time"
 
-	"github.com/guergeiro/fator-conversao-gas-portugal/internal/interval"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/domain/entity"
 )
-
-const timelayout = "2006-01-02"
 
 func TestEqualInterval(t *testing.T) {
 	start, err := time.Parse(timelayout, "2024-05-22")
@@ -17,8 +15,8 @@ func TestEqualInterval(t *testing.T) {
 	}
 	stop := start.AddDate(0, 0, 10)
 
-	i1 := interval.NewInterval(start, stop)
-	i2 := interval.NewInterval(start, stop)
+	i1 := entity.NewInterval(start, stop)
+	i2 := entity.NewInterval(start, stop)
 
 	expected := true
 	actual := i1.Equal(i2)
@@ -35,13 +33,13 @@ func TestDifferentInterval(t *testing.T) {
 	}
 	stop := start.AddDate(0, 0, 10)
 
-	base := interval.NewInterval(start, stop)
+	base := entity.NewInterval(start, stop)
 
-	input := []interval.Interval{
-		interval.NewInterval(start.AddDate(0, 0, 1), stop),
-		interval.NewInterval(start.AddDate(0, 0, -1), stop),
-		interval.NewInterval(start, stop.AddDate(0, 0, 1)),
-		interval.NewInterval(start, stop.AddDate(0, 0, -1)),
+	input := []entity.Interval{
+		entity.NewInterval(start.AddDate(0, 0, 1), stop),
+		entity.NewInterval(start.AddDate(0, 0, -1), stop),
+		entity.NewInterval(start, stop.AddDate(0, 0, 1)),
+		entity.NewInterval(start, stop.AddDate(0, 0, -1)),
 	}
 
 	expected := false
@@ -61,7 +59,7 @@ func TestNewIntervalsNoExcess(t *testing.T) {
 	}
 	stop := start.AddDate(0, 1, 0)
 
-	output := interval.NewIntervals(start, stop)
+	output := entity.NewIntervals(start, stop)
 
 	expected := 1
 	actual := len(output)
@@ -78,7 +76,7 @@ func TestNewIntervalsSingleExcess(t *testing.T) {
 	}
 	stop := start.AddDate(0, 1, 1)
 
-	output := interval.NewIntervals(start, stop)
+	output := entity.NewIntervals(start, stop)
 
 	expected := 2
 	actual := len(output)
@@ -96,7 +94,7 @@ func TestNewIntervalsDoubleExcess(t *testing.T) {
 	}
 	stop := start.AddDate(0, 2, 2)
 
-	output := interval.NewIntervals(start, stop)
+	output := entity.NewIntervals(start, stop)
 
 	expected := 3
 	actual := len(output)

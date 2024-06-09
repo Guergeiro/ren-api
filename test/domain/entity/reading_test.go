@@ -1,21 +1,20 @@
-package reading
+package entity
 
 import (
 	"testing"
 	"time"
 
-	"github.com/guergeiro/fator-conversao-gas-portugal/internal/reading"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/domain/entity"
 )
 
-const timelayout = "2006-01-02"
 
 func TestEqualReadings(t *testing.T) {
 	time, err := time.Parse(timelayout, "2024-05-22")
 	if err != nil {
 		t.Fail()
 	}
-	r1 := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
-	r2 := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	r1 := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	r2 := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
 
 	expected := true
 	actual := r1.Equal(r2)
@@ -29,16 +28,16 @@ func TestEqualDifferentReadings(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	base := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	base := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
 
-	input := []reading.Reading{
-		reading.NewReading(
+	input := []entity.Reading{
+		entity.NewReading(
 			time.AddDate(0, 0, 1), "CTS 6000 Valença do Minho", 0,
 		),
-		reading.NewReading(
+		entity.NewReading(
 			time, "CTS 7000 Campo Maior", 0,
 		),
-		reading.NewReading(
+		entity.NewReading(
 			time, "CTS 6000 Valença do Minho", 1,
 		),
 	}
@@ -59,7 +58,7 @@ func TestCompareDayEqualDates(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	r := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	r := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
 
 	expected := 0
 	actual := r.CompareDay(time)
@@ -74,7 +73,7 @@ func TestCompareDayHigherDates(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	r := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	r := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
 
 	expected := -1
 	actual := r.CompareDay(time.AddDate(0, 0, 1))
@@ -89,7 +88,7 @@ func TestCompareDayLowerDates(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	r := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	r := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
 
 	expected := 1
 	actual := r.CompareDay(time.AddDate(0, 0, -1))
@@ -104,8 +103,8 @@ func TestCompareReadingDayEqualDates(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	r1 := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
-	r2 := reading.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	r1 := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
+	r2 := entity.NewReading(time, "CTS 6000 Valença do Minho", 0)
 
 	expected := 0
 	actual := r1.CompareReadingDay(r2)
