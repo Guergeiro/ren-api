@@ -14,8 +14,8 @@ type Reading struct {
 type monitorizationPoint string
 
 const (
-	valenca_minho monitorizationPoint = "CTS 6000 Valença do Minho"
-	campo_maior   monitorizationPoint = "CTS 7000 Campo Maior"
+	VALENCA_MINHO monitorizationPoint = "CTS 6000 Valença do Minho"
+	CAMPO_MAIOR   monitorizationPoint = "CTS 7000 Campo Maior"
 )
 
 func NewReading(

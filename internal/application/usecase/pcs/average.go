@@ -36,7 +36,6 @@ type GetAverageUseCase struct {
 
 func NewGetAverageUseCase(
 	repository repository.ReadingRepository,
-
 	pruner service.ReadingPruner,
 ) GetAverageUseCase {
 	return GetAverageUseCase{
@@ -75,6 +74,9 @@ func (u GetAverageUseCase) Execute(props AverageProps) (float64, error) {
 	for reading := range channel {
 		total += reading.Value()
 		count += 1
+	}
+	if count == 0 {
+		return total, nil
 	}
 	average := total / float64(count)
 	return average, nil

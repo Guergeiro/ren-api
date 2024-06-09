@@ -11,7 +11,7 @@ type ReadingPruner struct {
 }
 
 func NewReadingPruner() ReadingPruner {
-return ReadingPruner{}
+	return ReadingPruner{}
 }
 
 func (p ReadingPruner) PruneExcessValues(
