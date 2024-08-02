@@ -31,7 +31,7 @@ func NewAverageProps(
 
 type GetAverageUseCase struct {
 	repository repository.ReadingRepository
-	pruner service.ReadingPruner
+	pruner     service.ReadingPruner
 }
 
 func NewGetAverageUseCase(
@@ -50,11 +50,14 @@ func (u GetAverageUseCase) Execute(props AverageProps) (float64, error) {
 		props.stopTime.AddDate(0, 0, 1),
 	)
 	channel := make(chan entity.Reading)
-	wg, _ := errgroup.WithContext(props.ctx)
+	wg, ctx := errgroup.WithContext(props.ctx)
 	for _, in := range intervals {
 		in := in
 		wg.Go(func() error {
-			parsedReadings := u.repository.FindByInterval(in)
+			parsedReadings := u.repository.FindByInterval(
+				ctx,
+				in,
+			)
 			for _, reading := range u.pruner.PruneExcessValues(
 				parsedReadings,
 				props.startTime,

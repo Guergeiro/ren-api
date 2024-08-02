@@ -1,4 +1,4 @@
-package controllers
+package controller
 
 import (
 	"net/http"
@@ -40,7 +40,11 @@ func (c PcsGetController) Handle(r *http.Request) (string, error) {
 			return "", err
 		}
 	}
-	input := pcs.NewAverageProps(r.Context(), startTime, stopTime)
+	input := pcs.NewAverageProps(
+		r.Context(),
+		startTime.Add(time.Hour*5),
+		stopTime.Add(time.Hour*4),
+	)
 	average, err := c.usecase.Execute(input)
 	if err != nil {
 		return "", err

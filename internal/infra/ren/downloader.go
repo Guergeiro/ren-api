@@ -11,24 +11,26 @@ import (
 	"github.com/guergeiro/fator-conversao-gas-portugal/internal/domain/entity"
 )
 
-func downloadCsv(interval entity.Interval) (io.ReadCloser, error) {
-	page, cookies, err := getInitialPage()
+func (r RenReadingRepository) downloadCsv(
+	interval entity.Interval,
+) (io.ReadCloser, error) {
+	page, cookies, err := r.getInitialPage()
 	if err != nil {
 		return nil, err
 	}
-	formUri, err := extractFormActionUri(page)
+	formUri, err := r.extractFormActionUri(page)
 	if err != nil {
 		return nil, err
 	}
-	csvUri, err := searchForIntervalCsv(formUri, cookies, interval)
+	csvUri, err := r.searchForIntervalCsv(formUri, cookies, interval)
 	if err != nil {
 		return nil, err
 	}
 	return getCsv(csvUri, cookies)
 }
 
-func getInitialPage() (*goquery.Document, []*http.Cookie, error) {
-	res, err := http.Get("https://www.ign.ren.pt/web/guest/monitorizacao-horaria-qualidade")
+func (r RenReadingRepository) getInitialPage() (*goquery.Document, []*http.Cookie, error) {
+	res, err := http.Get(r.endpoint)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -37,7 +39,7 @@ func getInitialPage() (*goquery.Document, []*http.Cookie, error) {
 	return doc, res.Cookies(), err
 }
 
-func searchForIntervalCsv(
+func (r RenReadingRepository) searchForIntervalCsv(
 	formUri string,
 	cookies []*http.Cookie,
 	interval entity.Interval,
@@ -72,7 +74,7 @@ func searchForIntervalCsv(
 	if err != nil {
 		return "", err
 	}
-	return extractCsvHref(doc)
+	return r.extractCsvHref(doc)
 }
 
 func getCsv(csvUri string, cookies []*http.Cookie) (io.ReadCloser, error) {
@@ -92,7 +94,9 @@ func getCsv(csvUri string, cookies []*http.Cookie) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
-func extractFormActionUri(doc *goquery.Document) (string, error) {
+func (r RenReadingRepository) extractFormActionUri(
+	doc *goquery.Document,
+) (string, error) {
 	// Load the HTML document
 	uri, exists := doc.Find("form#qualityReadingsSearchCriteria").First().Attr("action")
 	if exists == false {
@@ -101,7 +105,9 @@ func extractFormActionUri(doc *goquery.Document) (string, error) {
 	return uri, nil
 }
 
-func extractCsvHref(doc *goquery.Document) (string, error) {
+func (r RenReadingRepository) extractCsvHref(
+	doc *goquery.Document,
+) (string, error) {
 	uri, exists := doc.Find("span.csvIcon").Parent().Attr("href")
 	if exists == false {
 		return "", fmt.Errorf("Cant find csv uri")

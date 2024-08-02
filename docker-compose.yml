@@ -1,0 +1,24 @@
+services:
+  timescale:
+    image: timescale/timescaledb:latest-pg14
+    environment:
+      POSTGRES_DB: "test"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+    volumes:
+      - ./assets/postgres-entrypoint.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/postgresql/data
+
+  api:
+    image: cosmtrek/air:latest
+    environment:
+      air_wd: "/app"
+      POSTGRES_URL: "postgres://user:password@timescale:5432/test"
+    working_dir: "/app"
+    ports:
+      - "50000:49152"
+    volumes:
+      - ./:/app
+
+volumes:
+  db-data:

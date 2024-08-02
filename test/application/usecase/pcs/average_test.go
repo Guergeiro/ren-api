@@ -16,6 +16,7 @@ type mock_repository struct {
 }
 
 func (r mock_repository) FindByInterval(
+	ctx context.Context,
 	interval entity.Interval,
 ) []entity.Reading {
 	return r.returnValue

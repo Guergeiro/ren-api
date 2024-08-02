@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -51,13 +50,12 @@ func TestDifferentInterval(t *testing.T) {
 	}
 }
 
-
 func TestNewIntervalsNoExcess(t *testing.T) {
 	start, err := time.Parse(timelayout, "2024-05-22")
 	if err != nil {
 		t.Fail()
 	}
-	stop := start.AddDate(0, 1, 0)
+	stop := start.AddDate(0, 1, 0).Add(time.Hour * -1)
 
 	output := entity.NewIntervals(start, stop)
 
@@ -80,7 +78,6 @@ func TestNewIntervalsSingleExcess(t *testing.T) {
 
 	expected := 2
 	actual := len(output)
-	fmt.Println(output)
 
 	if expected != actual {
 		t.Errorf("expected %d, actual %d", expected, actual)
@@ -98,7 +95,6 @@ func TestNewIntervalsDoubleExcess(t *testing.T) {
 
 	expected := 3
 	actual := len(output)
-	fmt.Println(output)
 
 	if expected != actual {
 		t.Errorf("expected %d, actual %d", expected, actual)

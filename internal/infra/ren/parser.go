@@ -12,7 +12,9 @@ import (
 
 const timelayout = "2006-01-02 15:04"
 
-func parseCsv(reader io.Reader) ([]entity.Reading, error) {
+func (r RenReadingRepository) parseCsv(
+	reader io.Reader,
+) ([]entity.Reading, error) {
 	lines := []entity.Reading{}
 	scanner := bufio.NewScanner(reader)
 	for scanner.Scan() {
@@ -32,7 +34,10 @@ func parseCsv(reader io.Reader) ([]entity.Reading, error) {
 			return nil, err
 		}
 
-		lines = append(lines, entity.NewReading(timestamp, splittedLines[1], number))
+		lines = append(
+			lines,
+			entity.NewReading(timestamp, splittedLines[1], number),
+		)
 	}
 	return lines, nil
 }

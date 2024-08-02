@@ -11,7 +11,7 @@ type Interval struct {
 }
 
 func NewIntervals(start, stop time.Time) []Interval {
-	maximumStop := start.AddDate(0, 1, 0)
+	maximumStop := start.AddDate(0, 1, 0).Add(time.Hour * -1)
 	isSmallerThanMaximum := maximumStop.Compare(stop) >= 0
 	if isSmallerThanMaximum {
 		return []Interval{
@@ -19,7 +19,7 @@ func NewIntervals(start, stop time.Time) []Interval {
 		}
 	}
 
-	newStart := maximumStop.AddDate(0, 0, 1)
+	newStart := maximumStop.Add(time.Hour)
 	remainder := stop.Sub(newStart)
 	newStop := newStart.Add(remainder)
 	return slices.Concat(

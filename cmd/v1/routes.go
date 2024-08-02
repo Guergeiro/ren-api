@@ -3,18 +3,24 @@ package v1
 import (
 	"net/http"
 
-	"github.com/guergeiro/fator-conversao-gas-portugal/cmd/v1/controllers"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/adapters/controller"
 	"github.com/guergeiro/fator-conversao-gas-portugal/internal/application/service"
 	"github.com/guergeiro/fator-conversao-gas-portugal/internal/application/usecase/pcs"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/infra/connection"
 	"github.com/guergeiro/fator-conversao-gas-portugal/internal/infra/ren"
+	"github.com/guergeiro/fator-conversao-gas-portugal/internal/infra/timescale"
 )
 
-func Routes() *http.ServeMux {
+func NewRoutes() *http.ServeMux {
 	router := http.NewServeMux()
-
-	pcsGetController := controllers.NewPcsGetController(
+	pcsGetController := controller.NewPcsGetController(
 		pcs.NewGetAverageUseCase(
-			ren.NewRenReadingRepository(),
+			timescale.NewTimescaleReadingRepository(
+				ren.NewRenReadingRepository(
+					"https://www.ign.ren.pt/web/guest/monitorizacao-horaria-qualidade",
+				),
+				connection.PostgresConn,
+			),
 			service.NewReadingPruner(),
 		),
 	)

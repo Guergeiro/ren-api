@@ -7,15 +7,15 @@ import (
 
 type Reading struct {
 	timestamp time.Time
-	name      monitorizationPoint
+	name      MonitorizationPoint
 	value     float64
 }
 
-type monitorizationPoint string
+type MonitorizationPoint string
 
 const (
-	VALENCA_MINHO monitorizationPoint = "CTS 6000 Valença do Minho"
-	CAMPO_MAIOR   monitorizationPoint = "CTS 7000 Campo Maior"
+	VALENCA_MINHO MonitorizationPoint = "CTS 6000 Valença do Minho"
+	CAMPO_MAIOR   MonitorizationPoint = "CTS 7000 Campo Maior"
 )
 
 func NewReading(
@@ -26,9 +26,17 @@ func NewReading(
 
 	return Reading{
 		timestamp: timestamp,
-		name:      monitorizationPoint(name),
+		name:      MonitorizationPoint(name),
 		value:     value,
 	}
+}
+
+func (r Reading) Timestamp() time.Time {
+	return r.timestamp
+}
+
+func (r Reading) Name() MonitorizationPoint {
+	return r.name
 }
 
 func (r Reading) Value() float64 {
